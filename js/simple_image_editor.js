@@ -203,7 +203,7 @@ window.addEventListener('DOMContentLoaded', function () {
       var tempCanvas = document.createElement('canvas');
       var tempCanvasContext = tempCanvas.getContext('2d');
 
-      var imgClone = this.img.cloneNode();
+      var imgClone = model._img.cloneNode();
       imgClone.width = model._outputWidth;
       imgClone.height = model._outputHeight;
 
