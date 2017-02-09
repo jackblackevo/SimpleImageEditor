@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, user-scalable=0">
+  <title>Simple Image Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.css" />
+  <link rel="stylesheet" href="css/simple_image_editor.css" />
+</head>
+
+<body class="horizontalCenter">
+  <!-- 選擇檔案表單 Start -->
+  <section id="formArea">
+    <div id="tipTextArea">
+      <span>Please choose an image file.</span>
+    </div>
+    <div id="btnBar" class="horizontalCenter">
+      <form id="chooseFileForm">
+        <label id="chooseFileBtn" class="btn" for="chooseFileInput">選擇檔案</label>
+        <input type="file" id="chooseFileInput" accept="image/jpeg, image/png" />
+      </form>
+    </div>
+    <div id="imgPreviewAreaWrap">
+      <image id="imgPreviewArea" />
+    </div>
+    <div id="imgInfo">
+      <div class="cssTable">
+        <div class="cssTr">
+          <div class="cssTd">檔案名稱：</div>
+          <div id="fileNameTxt" class="cssTd">尚未選取檔案</div>
+        </div>
+        <div class="cssTr">
+          <div class="cssTd">檔案格式：</div>
+          <div id="fileTypeTxt" class="cssTd">尚未選取檔案</div>
+        </div>
+        <div class="cssTr">
+          <div class="cssTd">原始解析度：</div>
+          <div class="cssTd">Width = <span id="originalImgWidthTxt">0</span>、Height = <span id="originalImgHeightTxt">0</span></div>
+        </div>
+        <div class="cssTr">
+          <div class="cssTd">原始大小：</div>
+          <div class="cssTd"><span id="originalImgSizeTxt">0</span> KB</div>
+        </div>
+        <div class="cssTr">
+          <div class="cssTd">裁切後解析度：</div>
+          <div class="cssTd">Width = <span id="croppedImgWidthTxt">0</span>、Height = <span id="croppedImgHeightTxt">0</span></div>
+        </div>
+      </div>
+    </div>
+    <div id="resizeImg">
+      <span>輸出解析度：Width = <span id="outputImgWidthTxt">0</span>、Height = <span id="outputImgHeightTxt">0</span></span><br />
+      <span>resize 比率：</span><input id="resizeImgPercentRange" type="range" min="1" max="100" step="1" value="60" disabled="disabled" />
+      <span><span id="resizeValTxt">60</span>%</span><input id="isResizeImgLockCheckBox" type="checkbox" disabled="disabled" />鎖定解析度在 1600 * 1200 內<br />
+      <span>影像品質：</span><input id="qualityPercentRange" type="range" min="0" max="93" step="1" value="93" disabled="disabled" />
+      <span><span id="qualityValTxt">93</span>%</span><br />
+      <span>是否轉為灰階：<input id="isGrayscaleCheckBox" type="checkbox" disabled="disabled" /></span><br />
+      <button id="outputFileBtn" disabled="disabled">輸出檔案</button>
+    </div>
+  </section>
+  <!-- 選擇檔案表單 End -->
+  <!-- 檔案編輯 Start -->
+  <section id="imgContainer">
+    <img id="imageEditor">
+    <div id="controlBtnArea" class="horizontalCenter">
+      <button id="cropBtn">裁切</button>
+      <button id="resetBtn">重置</button>
+      <button id="cancelBtn">取消</button>
+    </div>
+  </section>
+  <!-- 檔案編輯 End -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+  <!--<script src="js/simple_image_editor.js"></script>-->
+  <script src="js/simple_image_editor.js"></script>
+</body>
+
+</html>
