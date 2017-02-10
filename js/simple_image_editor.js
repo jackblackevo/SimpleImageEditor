@@ -50,14 +50,16 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     _bindImgToOpenEditor: function () {
       console.log('editor init...');
-      model._img.addEventListener('click', function openEditorHandler(event) {
-        model._initImgEditor();
+      // 先移除事件處理器，避免重複註冊
+      model._img.removeEventListener('click', model._openEditorHandler);
+      model._img.addEventListener('click', model._openEditorHandler);
 
-        view.displayImgEditor();
+    },
+    _openEditorHandler: function (event) {
+      console.log('editor open...');
+      model._initImgEditor();
 
-        event.target.removeEventListener('click', openEditorHandler);
-
-      });
+      view.displayImgEditor();
 
     },
     _initImgEditor: function () {
