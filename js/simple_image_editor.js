@@ -159,15 +159,27 @@ window.addEventListener('DOMContentLoaded', function () {
 
         fileReader.addEventListener('load', function (event) {
           resolve(event.target.result);
+
         });
 
         fileReader.readAsDataURL(imgFile);
 
       }).then(function (dataUrl) {
-        model._img = imgElement;
-        model._img.src = dataUrl;
-        model._imageEditor = imageEditor;
+        return new Promise(function (resolve, reject) {
+          model._img = imgElement;
 
+          model._img.addEventListener('load', function imgLoadHandler(event) {
+            resolve();
+
+            event.target.removeEventListener('load', imgLoadHandler);
+
+          });
+
+          model._img.src = dataUrl;
+
+        });
+
+      }).then(function () {
         model._imgFileName = imgFile.name;
         model._imgMIMEType = imgFile.type;
         model._imgFileSize = imgFile.size;
@@ -175,7 +187,6 @@ window.addEventListener('DOMContentLoaded', function () {
         model._imgHeight = model._img.naturalHeight;
         model._updateResizePercentage();
 
-        view.setImgToEditor(model._img);
         view.displayImgFileDetail({
           imgFileName: model._imgFileName,
           imgMIMEType: model._imgMIMEType,
@@ -188,6 +199,21 @@ window.addEventListener('DOMContentLoaded', function () {
           imgOutputHeight: model._outputHeight
         });
 
+        return new Promise(function (resolve, reject) {
+          model._imageEditor = imageEditor;
+
+          model._imageEditor.addEventListener('load', function imgLoadHandler(event) {
+            resolve();
+
+            event.target.removeEventListener('load', imgLoadHandler);
+
+          });
+
+          model._imageEditor.src = model._img.src;
+
+        })
+
+      }).then(function () {
         model.closeCropper();
 
       });
@@ -228,19 +254,43 @@ window.addEventListener('DOMContentLoaded', function () {
      * 將編輯過的圖片更新至負責顯示的 HTMLImageElement 元素
      */
     setEditedImgSrcToImg: function () {
-      var croppedImgData = model._imgCropper.getCroppedCanvas();
-      model._img.src = croppedImgData.toDataURL(model._imgMIMEType);
+      new Promise(function (resolve, reject) {
+        var croppedImgData = model._imgCropper.getCroppedCanvas();
 
-      model._imgWidth = model._img.naturalWidth;
-      model._imgHeight = model._img.naturalHeight;
-      model._outputWidth = Math.round(model._imgWidth * model._resizePercentage / 100);
-      model._outputHeight = Math.round(model._imgHeight * model._resizePercentage / 100);
+        model._img.addEventListener('load', function imgLoadHandler(event) {
+          reject();
 
-      view.setImgToEditor(model._img);
-      view.refreshCroppedImgResolution(model._imgWidth, model._imgHeight);
-      view.refreshResizePercentageWidthHeight(model._resizePercentage, model._outputWidth, model._outputHeight);
+          event.target.removeEventListener('load', imgLoadHandler);
 
-      model.closeCropper();
+        });
+
+        model._img.src = croppedImgData.toDataURL(model._imgMIMEType);
+
+      }).then(function () {
+        model._imgWidth = model._img.naturalWidth;
+        model._imgHeight = model._img.naturalHeight;
+        model._outputWidth = Math.round(model._imgWidth * model._resizePercentage / 100);
+        model._outputHeight = Math.round(model._imgHeight * model._resizePercentage / 100);
+
+        view.refreshCroppedImgResolution(model._imgWidth, model._imgHeight);
+        view.refreshResizePercentageWidthHeight(model._resizePercentage, model._outputWidth, model._outputHeight);
+
+        return new Promise(function (resolve, reject) {
+          model._imageEditor.addEventListener('load', function imgLoadHandler(event) {
+            reject();
+
+            event.target.removeEventListener('load', imgLoadHandler);
+
+          });
+
+          model._imageEditor.src = model._img.src;
+
+        });
+
+      }).then(function () {
+        model.closeCropper();
+
+      });
 
     },
     /**
@@ -324,10 +374,6 @@ window.addEventListener('DOMContentLoaded', function () {
     resetBtn: document.getElementById('resetBtn'),
     cancelBtn: document.getElementById('cancelBtn'),
     isGrayscaleCheckBox: document.getElementById('isGrayscaleCheckBox'),
-    setImgToEditor: function (imgElement) {
-      view.imageEditor.src = imgElement.src;
-
-    },
     displayImgFileDetail: function (imgDetailData) {
       view.fileNameTxt.textContent = imgDetailData.imgFileName;
       view.fileTypeTxt.textContent = imgDetailData.imgMIMEType;
