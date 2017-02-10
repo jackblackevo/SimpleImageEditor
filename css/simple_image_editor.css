@@ -38,15 +38,6 @@
   max-width: 100%;
 }
 
-/*#imgContainer {
-    width: 100%;
-    margin-top: 10px;
-  }*/
-
-#imgContainer>img {
-  width: 100%;
-}
-
 #controlBtnArea :nth-child(n+1) {
   margin-left: 10px;
 }
