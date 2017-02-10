@@ -260,7 +260,7 @@ window.addEventListener('DOMContentLoaded', function () {
         var croppedImgData = model._imgCropper.getCroppedCanvas();
 
         model._img.addEventListener('load', function imgLoadHandler(event) {
-          reject();
+          resolve();
 
           event.target.removeEventListener('load', imgLoadHandler);
 
@@ -279,7 +279,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         return new Promise(function (resolve, reject) {
           model._imageEditor.addEventListener('load', function imgLoadHandler(event) {
-            reject();
+            resolve();
 
             event.target.removeEventListener('load', imgLoadHandler);
 
