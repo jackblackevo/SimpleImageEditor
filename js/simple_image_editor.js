@@ -148,6 +148,62 @@ window.addEventListener('DOMContentLoaded', function () {
       }
 
     },
+    _resetOrientation: function (srcBase64, srcOrientation, srcImgMIMEType) {
+      return new Promise(function (resolve, reject) {
+        var tempImg = new Image();
+
+        tempImg.addEventListener('load', function () {
+          var width = tempImg.naturalWidth;
+          var height = tempImg.naturalHeight;
+
+          var tempCanvas = document.createElement('canvas');
+          var tempCanvasContext = tempCanvas.getContext("2d");
+
+          if ([5, 6, 7, 8].indexOf(srcOrientation) > -1) {
+            tempCanvas.width = height;
+            tempCanvas.height = width;
+          } else {
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+          }
+
+          switch (srcOrientation) {
+            case 2:
+              tempCanvasContext.transform(-1, 0, 0, 1, width, 0);
+              break;
+            case 3:
+              tempCanvasContext.transform(-1, 0, 0, -1, width, height);
+              break;
+            case 4:
+              tempCanvasContext.transform(1, 0, 0, -1, 0, height);
+              break;
+            case 5:
+              tempCanvasContext.transform(0, 1, 1, 0, 0, 0);
+              break;
+            case 6:
+              tempCanvasContext.transform(0, 1, -1, 0, height, 0);
+              break;
+            case 7:
+              tempCanvasContext.transform(0, -1, -1, 0, height, width);
+              break;
+            case 8:
+              tempCanvasContext.transform(0, -1, 1, 0, 0, width);
+              break;
+            default:
+              tempCanvasContext.transform(1, 0, 0, 1, 0, 0);
+          }
+
+          tempCanvasContext.drawImage(tempImg, 0, 0);
+
+          resolve(tempCanvas.toDataURL(srcImgMIMEType));
+
+        });
+
+        tempImg.src = srcBase64;
+
+      });
+
+    },
     /**
      * 讀取圖片
      * 
@@ -168,6 +224,21 @@ window.addEventListener('DOMContentLoaded', function () {
 
       }).then(function (dataUrl) {
         return new Promise(function (resolve, reject) {
+          new Exif(dataUrl, {
+            exif: true,
+            done: function (exifTags) {
+              resolve(exifTags.Orientation);
+
+            }
+          });
+
+        }).then(function (orientation) {
+          return model._resetOrientation(dataUrl, orientation, imgFile.type);
+
+        });
+
+      }).then(function (dataUrlAfterRotated) {
+        return new Promise(function (resolve, reject) {
           model._img = imgElement;
 
           model._img.addEventListener('load', function imgLoadHandler(event) {
@@ -177,7 +248,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           });
 
-          model._img.src = dataUrl;
+          model._img.src = dataUrlAfterRotated;
 
         });
 
