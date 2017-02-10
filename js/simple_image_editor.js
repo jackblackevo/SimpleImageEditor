@@ -57,9 +57,9 @@ window.addEventListener('DOMContentLoaded', function () {
     },
     _openEditorHandler: function (event) {
       console.log('editor open...');
-      model._initImgEditor();
-
       view.displayImgEditor();
+
+      model._initImgEditor();
 
     },
     _initImgEditor: function () {
