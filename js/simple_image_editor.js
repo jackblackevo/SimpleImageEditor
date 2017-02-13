@@ -542,11 +542,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     },
     updateGrayscaleFlag: function (isGrayscale) {
-      model.setIsGrayscale(isGrayscale.valueOf());
+      model.setIsGrayscale(isGrayscale);
 
     },
     updateResizeImgLockFlag: function (isResizeImgLock) {
-      model.setIsResizeImgLock(isResizeImgLock.valueOf());
+      model.setIsResizeImgLock(isResizeImgLock);
 
     },
     getImgFile: function () {
@@ -612,13 +612,13 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     view.isGrayscaleCheckBox.addEventListener('change', function (event) {
-      var isGrayscale = new Boolean(event.target.checked);
+      var isGrayscale = event.target.checked;
       controller.updateGrayscaleFlag(isGrayscale);
 
     });
 
     view.isResizeImgLockCheckBox.addEventListener('click', function (event) {
-      var isResizeImgLock = new Boolean(event.target.checked);
+      var isResizeImgLock = event.target.checked;
       controller.updateResizeImgLockFlag(isResizeImgLock);
 
     });
