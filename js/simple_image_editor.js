@@ -229,11 +229,19 @@ window.addEventListener('DOMContentLoaded', function () {
             done: function (exifTags) {
               resolve(exifTags.Orientation);
 
+            },
+            fail: function (msg) {
+              reject(msg);
+
             }
           });
 
         }).then(function (orientation) {
           return model._resetOrientation(dataUrl, orientation, imgFile.type);
+
+        }).catch(function (msg) {
+          console.log(msg);
+          return Promise.resolve(dataUrl);
 
         });
 
