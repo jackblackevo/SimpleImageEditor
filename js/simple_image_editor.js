@@ -82,6 +82,12 @@ window.addEventListener('DOMContentLoaded', function () {
       });
 
     },
+    _checkFileType: function (imgFile) {
+      var fileType = imgFile.type;
+
+      return /^image\/(jpe?g|png)$/i.test(fileType);
+
+    },
     _updateResizePercentage: function () {
       if (model._isResizeImgLock) {
         var longerLength;
@@ -212,6 +218,12 @@ window.addEventListener('DOMContentLoaded', function () {
      * @param {HTMLImageElement} imageEditor Cropper 編輯器所使用的 HTMLImageElement 元素
      */
     readImg: function (imgElement, imgFile, imageEditor) {
+      if (!model._checkFileType(imgFile)) {
+        alert('Invalid image type.');
+        return;
+
+      }
+
       new Promise(function (resolve, reject) {
         var fileReader = new FileReader();
 
