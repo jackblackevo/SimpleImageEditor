@@ -168,35 +168,45 @@ window.addEventListener('DOMContentLoaded', function () {
           if ([5, 6, 7, 8].indexOf(srcOrientation) > -1) {
             tempCanvas.width = height;
             tempCanvas.height = width;
+
           } else {
             tempCanvas.width = width;
             tempCanvas.height = height;
+
           }
 
           switch (srcOrientation) {
             case 2:
               tempCanvasContext.transform(-1, 0, 0, 1, width, 0);
               break;
+
             case 3:
               tempCanvasContext.transform(-1, 0, 0, -1, width, height);
               break;
+
             case 4:
               tempCanvasContext.transform(1, 0, 0, -1, 0, height);
               break;
+
             case 5:
               tempCanvasContext.transform(0, 1, 1, 0, 0, 0);
               break;
+
             case 6:
               tempCanvasContext.transform(0, 1, -1, 0, height, 0);
               break;
+
             case 7:
               tempCanvasContext.transform(0, -1, -1, 0, height, width);
               break;
+
             case 8:
               tempCanvasContext.transform(0, -1, 1, 0, 0, width);
               break;
+
             default:
               tempCanvasContext.transform(1, 0, 0, 1, 0, 0);
+
           }
 
           tempCanvasContext.drawImage(tempImg, 0, 0);
