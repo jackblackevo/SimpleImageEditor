@@ -42,11 +42,17 @@ module.exports = {
           {
             // Loader 名稱在 Webpack 2 不可省略 '-loader' 後綴
             loader: 'babel-loader'
+          },
+          {
+            // 使用套件來自動加入 Hot Module Replacement 的 API 呼叫
+            loader: 'webpack-module-hot-accept'
           }
         ]
       }
     ]
   },
+  // 產生原始碼映射表（Source Map），方便開發時除錯
+  devtool: 'cheap-module-eval-source-map',
   // Webpack Dev Server 設定
   devServer: {
     // 伺服器根目錄位置（本機路徑，基於 context）
@@ -62,7 +68,10 @@ module.exports = {
     port: 9000,
     // 建議與 output.publicPath 一致
     // 若開啟 Hot-Reload，則必須與 output.publicPath 一致
-    publicPath: '/js/'
+    publicPath: '/js/',
+    stats: {
+      colors: true
+    }
   },
   // 插件
   plugins: [
