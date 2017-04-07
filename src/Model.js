@@ -86,12 +86,14 @@ class Model {
     console.log('editor init...')
 
     if (this[_lastOpenEditorHandler] !== null) {
-    // 先移除事件處理器，避免重複註冊
+      // 先移除事件處理器，避免重複註冊
       this[_img].removeEventListener('click', this[_lastOpenEditorHandler])
       
+    } else {
+      this[_lastOpenEditorHandler] = this[_openEditorHandler]()
+
     }
 
-    this[_lastOpenEditorHandler] = this[_openEditorHandler]()
     this[_img].addEventListener('click', this[_lastOpenEditorHandler])
 
   }
