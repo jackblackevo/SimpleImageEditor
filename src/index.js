@@ -1,63 +1,68 @@
-import view from './view';
-import controller from './controller';
+import View from './View'
+import Model from './Model'
+import Controller from './Controller'
 
-window.addEventListener('DOMContentLoaded', function () {
-  (function pageInit() {
-    view.chooseFileInput.addEventListener('change', function (event) {
-      var fileList = event.target.files;
+window.addEventListener('DOMContentLoaded', () => {
+  ;(function pageInit() {
+    const view = new View(document)
+    const model = new Model(view)
+    const controller = new Controller(model, view)
+
+    view.chooseFileInput.addEventListener('change', event => {
+      const fileList = event.target.files
 
       if (fileList.length > 0) {
-        var file = fileList[0];
-        controller.readSelectFile(file);
+        const file = fileList[0]
+        controller.readSelectFile(file)
 
       }
 
-    });
+    })
 
-    view.resizeImgPercentRange.addEventListener('input', function (event) {
-      var value = event.target.value;
-      controller.updateResizeImgPercent(value);
+    view.resizeImgPercentRange.addEventListener('input', event => {
+      const value = event.target.value
+      controller.updateResizeImgPercent(value)
 
-    });
+    })
 
-    view.qualityPercentRange.addEventListener('input', function (event) {
-      var value = event.target.value;
-      controller.updateCompressionImgPercent(value);
+    view.qualityPercentRange.addEventListener('input', event => {
+      const value = event.target.value
+      controller.updateCompressionImgPercent(value)
 
-    });
+    })
 
-    view.outputFileBtn.addEventListener('click', function () {
-      controller.getImgFile();
+    view.outputFileBtn.addEventListener('click', () => {
+      controller.getImgFile()
 
-    });
+    })
 
-    view.cropBtn.addEventListener('click', function () {
-      controller.cropImg();
+    view.cropBtn.addEventListener('click', () => {
+      controller.cropImg()
 
-    });
+    })
 
-    view.resetBtn.addEventListener('click', function () {
-      controller.resetCrop();
+    view.resetBtn.addEventListener('click', () => {
+      controller.resetCrop()
 
-    });
+    })
 
-    view.cancelBtn.addEventListener('click', function () {
-      controller.closeCrop();
+    view.cancelBtn.addEventListener('click', () => {
+      controller.closeCrop()
 
-    });
+    })
 
-    view.isGrayscaleCheckBox.addEventListener('change', function (event) {
-      var isGrayscale = event.target.checked;
-      controller.updateGrayscaleFlag(isGrayscale);
+    view.isGrayscaleCheckBox.addEventListener('change', event => {
+      const isGrayscale = event.target.checked
+      controller.updateGrayscaleFlag(isGrayscale)
 
-    });
+    })
 
-    view.isResizeImgLockCheckBox.addEventListener('click', function (event) {
-      var isResizeImgLock = event.target.checked;
-      controller.updateResizeImgLockFlag(isResizeImgLock);
+    view.isResizeImgLockCheckBox.addEventListener('click', event => {
+      const isResizeImgLock = event.target.checked
+      controller.updateResizeImgLockFlag(isResizeImgLock)
 
-    });
+    })
 
-  })();
+  })()
 
-});
+})

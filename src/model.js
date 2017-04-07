@@ -1,224 +1,267 @@
-import view from './view';
+const _view = Symbol()
+const _img = Symbol()
+const _imageEditor = Symbol()
+const _imgMIMEType = Symbol()
+const _imgFileSize = Symbol()
+const _imgFileName = Symbol()
+const _imgWidth = Symbol()
+const _imgHeight = Symbol()
+const _outputWidth = Symbol()
+const _outputHeight = Symbol()
+const _maxOutputLongerLength = Symbol()
+const _maxOutputShorterLength = Symbol()
+const _resizePercentage = Symbol()
+const _qualityRate = Symbol()
+const _isGrayscale = Symbol()
+const _isResizeImgLock = Symbol()
+const _imgCropper = Symbol()
+const _turnGrayscale = Symbol()
+const _destroyCropper = Symbol()
+const _bindImgToOpenEditor = Symbol()
+const _openEditorHandler = Symbol()
+const _initImgEditor = Symbol()
+const _checkFileType = Symbol()
+const _updateResizePercentage = Symbol()
+const _resetOrientation = Symbol()
 
-const model = {
-  _img: null,
-  _imageEditor: null,
-  _imgMIMEType: '',
-  _imgFileSize: 0,
-  _imgFileName: '',
-  _imgWidth: 0,
-  _imgHeight: 0,
-  _outputWidth: 0,
-  _outputHeight: 0,
-  _maxOutputLongerLength: 1600,
-  _maxOutputShorterLength: 1200,
-  _resizePercentage: 60,
-  _qualityRate: 0.93,
-  _isGrayscale: false,
-  _isResizeImgLock: false,
-  _imgCropper: null,
-  _turnGrayscale: canvasContext => {
-    var tempImgData;
-    var tempData;
+class Model {
+  constructor(view) {
+    this[_view] = view
 
-    tempImgData = canvasContext.getImageData(0, 0, model._outputWidth, model._outputHeight);
-    tempData = tempImgData.data;
+    this[_img] = null
+    this[_imageEditor] = null
+    this[_imgMIMEType] = ''
+    this[_imgFileSize] = 0
+    this[_imgFileName] = ''
+    this[_imgWidth] = 0
+    this[_imgHeight] = 0
+    this[_outputWidth] = 0
+    this[_outputHeight] = 0
+    this[_maxOutputLongerLength] = 1600
+    this[_maxOutputShorterLength] = 1200
+    this[_resizePercentage] = 60
+    this[_qualityRate] = 0.93
+    this[_isGrayscale] = false
+    this[_isResizeImgLock] = false
+    this[_imgCropper] = null
 
-    for (var i = 0; i < tempData.length; i += 4) {
-      var brightness = 0.34 * tempData[i] + 0.5 * tempData[i + 1] + 0.16 * tempData[i + 2];
+  }
+
+
+  [_turnGrayscale](canvasContext) {
+    let tempImgData
+    let tempData
+
+    tempImgData = canvasContext.getImageData(0, 0, this[_outputWidth], this[_outputHeight])
+    tempData = tempImgData.data
+
+    for (let i = 0; i < tempData.length; i += 4) {
+      const brightness = 0.34 * tempData[i] + 0.5 * tempData[i + 1] + 0.16 * tempData[i + 2]
       // red
-      tempData[i] = brightness;
+      tempData[i] = brightness
       // green
-      tempData[i + 1] = brightness;
+      tempData[i + 1] = brightness
       // blue
-      tempData[i + 2] = brightness;
+      tempData[i + 2] = brightness
     }
 
-    canvasContext.putImageData(tempImgData, 0, 0);
+    canvasContext.putImageData(tempImgData, 0, 0)
 
-  },
-  _destroyCropper: () => {
-    view.hideImgEditor();
+  }
 
-    if (model._imgCropper !== null) {
+  [_destroyCropper]() {
+    this[_view].hideImgEditor()
+
+    if (this[_imgCropper] !== null) {
       console.log('editor close...')
-      model._imgCropper.destroy();
+      this[_imgCropper].destroy()
 
     }
 
-  },
-  _bindImgToOpenEditor: () => {
-    console.log('editor init...');
+  }
+
+  [_bindImgToOpenEditor]() {
+    console.log('editor init...')
     // 先移除事件處理器，避免重複註冊
-    model._img.removeEventListener('click', model._openEditorHandler);
-    model._img.addEventListener('click', model._openEditorHandler);
+    const handler = this[_openEditorHandler]()
+    this[_img].removeEventListener('click', handler)
+    this[_img].addEventListener('click', handler)
 
-  },
-  _openEditorHandler: event => {
-    console.log('editor open...');
-    view.displayImgEditor();
+  }
 
-    model._initImgEditor();
+  [_openEditorHandler]() {
+    return event => {
+      console.log('editor open...')
+      this[_view].displayImgEditor()
 
-  },
-  _initImgEditor: () => {
-    model._imgCropper = new Cropper(model._imageEditor, {
+      this[_initImgEditor]()
+
+    }
+
+  }
+
+  [_initImgEditor]() {
+    this[_imgCropper] = new Cropper(this[_imageEditor], {
       movable: false,
       // zoomable: false,
       rotatable: false,
       scalable: false,
       /*
       crop: function (event) {
-         console.log('x = ' + event.detail.x);
-         console.log('y = ' + event.detail.y);
-         console.log('width = ' + event.detail.width);
-         console.log('height = ' + event.detail.height);
-         console.log('rotate = ' + event.detail.rotate);
-         console.log('scaleX = ' + event.detail.scaleX);
-         console.log('scaleY = ' + event.detail.scaleY);
+         console.log('x = ' + event.detail.x)
+         console.log('y = ' + event.detail.y)
+         console.log('width = ' + event.detail.width)
+         console.log('height = ' + event.detail.height)
+         console.log('rotate = ' + event.detail.rotate)
+         console.log('scaleX = ' + event.detail.scaleX)
+         console.log('scaleY = ' + event.detail.scaleY)
        }
        */
-    });
+    })
 
-  },
-  _checkFileType: imgFile => {
-    var fileType = imgFile.type;
+  }
 
-    return /^image\/(jpe?g|png)$/i.test(fileType);
+  [_checkFileType](imgFile) {
+    const fileType = imgFile.type
 
-  },
-  _updateResizePercentage: () => {
-    if (model._isResizeImgLock) {
-      var longerLength;
-      var shorterLength;
-      var longerLengthName;
+    return /^image\/(jpe?g|png)$/i.test(fileType)
 
-      var isLongerLengthLongerThanMax;
-      var isShorterLengthLongerThanMax;
+  }
 
-      var rate;
+  [_updateResizePercentage]() {
+    if (this[_isResizeImgLock]) {
+      let longerLength
+      let shorterLength
+      let longerLengthName
 
-      model._imgWidth > model._imgHeight ? (longerLength = model._imgWidth, shorterLength = model._imgHeight, longerLengthName = 'width') : (longerLength = model._imgHeight, shorterLength = model._imgWidth, longerLengthName = 'height');
+      let isLongerLengthLongerThanMax
+      let isShorterLengthLongerThanMax
 
-      var isFirst = true;
+      let rate
+
+      this[_imgWidth] > this[_imgHeight] ? (longerLength = this[_imgWidth], shorterLength = this[_imgHeight], longerLengthName = 'width') : (longerLength = this[_imgHeight], shorterLength = this[_imgWidth], longerLengthName = 'height')
+
+      let isFirst = true
       while (true) {
-        isLongerLengthLongerThanMax = longerLength > model._maxOutputLongerLength;
-        isShorterLengthLongerThanMax = shorterLength > model._maxOutputShorterLength;
+        isLongerLengthLongerThanMax = longerLength > this[_maxOutputLongerLength]
+        isShorterLengthLongerThanMax = shorterLength > this[_maxOutputShorterLength]
 
         if (isLongerLengthLongerThanMax || isShorterLengthLongerThanMax) {
-          isFirst && view.disableResizeImgPercentRange(true);
+          isFirst && this[_view].disableResizeImgPercentRange(true)
 
           if (isLongerLengthLongerThanMax) {
-            rate = 1 - ((longerLength - model._maxOutputLongerLength) / longerLength);
-            longerLength = model._maxOutputLongerLength;
-            Math.round(shorterLength *= rate);
+            rate = 1 - ((longerLength - this[_maxOutputLongerLength]) / longerLength)
+            longerLength = this[_maxOutputLongerLength]
+            Math.round(shorterLength *= rate)
 
-            isFirst = false;
-            continue;
+            isFirst = false
+            continue
 
           }
 
           if (isShorterLengthLongerThanMax) {
-            rate = 1 - ((shorterLength - model._maxOutputShorterLength) / shorterLength);
-            shorterLength = model._maxOutputShorterLength;
-            Math.round(longerLength *= rate);
+            rate = 1 - ((shorterLength - this[_maxOutputShorterLength]) / shorterLength)
+            shorterLength = this[_maxOutputShorterLength]
+            Math.round(longerLength *= rate)
 
-            isFirst = false;
-            continue;
+            isFirst = false
+            continue
 
           }
 
         } else {
-          view.disableResizeImgPercentRange(true);
-          break;
+          this[_view].disableResizeImgPercentRange(true)
+          break
 
         }
-        isFirst = false;
+        isFirst = false
 
       }
 
-      longerLengthName === 'width' ? (model._outputWidth = longerLength, model._outputHeight = shorterLength) : (model._outputWidth = shorterLength, model._outputHeight = longerLength);
-      model._resizePercentage = Math.round(((model._outputWidth / model._imgWidth) + (model._outputHeight / model._imgHeight)) / 2 * 100);
+      longerLengthName === 'width' ? (this[_outputWidth] = longerLength, this[_outputHeight] = shorterLength) : (this[_outputWidth] = shorterLength, this[_outputHeight] = longerLength)
+      this[_resizePercentage] = Math.round(((this[_outputWidth] / this[_imgWidth]) + (this[_outputHeight] / this[_imgHeight])) / 2 * 100)
 
-      view.refreshResizePercentageWidthHeight(model._resizePercentage, model._outputWidth, model._outputHeight);
-      view.refreshResizeImgPercentRangeVal(model._resizePercentage);
+      this[_view].refreshResizePercentageWidthHeight(this[_resizePercentage], this[_outputWidth], this[_outputHeight])
+      this[_view].refreshResizeImgPercentRangeVal(this[_resizePercentage])
 
     } else {
-      model._outputWidth = Math.round(model._imgWidth * model._resizePercentage / 100);
-      model._outputHeight = Math.round(model._imgHeight * model._resizePercentage / 100);
+      this[_outputWidth] = Math.round(this[_imgWidth] * this[_resizePercentage] / 100)
+      this[_outputHeight] = Math.round(this[_imgHeight] * this[_resizePercentage] / 100)
 
-      view.refreshResizePercentageWidthHeight(model._resizePercentage, model._outputWidth, model._outputHeight);
-      view.disableResizeImgPercentRange(false);
+      this[_view].refreshResizePercentageWidthHeight(this[_resizePercentage], this[_outputWidth], this[_outputHeight])
+      this[_view].disableResizeImgPercentRange(false)
 
     }
 
-  },
-  _resetOrientation: function (srcBase64, srcOrientation, srcImgMIMEType) {
-    return new Promise(function (resolve, reject) {
-      var tempImg = new Image();
+  }
 
-      tempImg.addEventListener('load', function () {
-        var width = tempImg.naturalWidth;
-        var height = tempImg.naturalHeight;
+  [_resetOrientation](srcBase64, srcOrientation, srcImgMIMEType) {
+    return new Promise((resolve, reject) => {
+      const tempImg = new Image()
 
-        var tempCanvas = document.createElement('canvas');
-        var tempCanvasContext = tempCanvas.getContext("2d");
+      tempImg.addEventListener('load', () => {
+        const width = tempImg.naturalWidth
+        const height = tempImg.naturalHeight
+
+        const tempCanvas = document.createElement('canvas')
+        const tempCanvasContext = tempCanvas.getContext("2d")
 
         if ([5, 6, 7, 8].indexOf(srcOrientation) > -1) {
-          tempCanvas.width = height;
-          tempCanvas.height = width;
+          tempCanvas.width = height
+          tempCanvas.height = width
 
         } else {
-          tempCanvas.width = width;
-          tempCanvas.height = height;
+          tempCanvas.width = width
+          tempCanvas.height = height
 
         }
 
         switch (srcOrientation) {
           case 2:
-            tempCanvasContext.transform(-1, 0, 0, 1, width, 0);
-            break;
+            tempCanvasContext.transform(-1, 0, 0, 1, width, 0)
+            break
 
           case 3:
-            tempCanvasContext.transform(-1, 0, 0, -1, width, height);
-            break;
+            tempCanvasContext.transform(-1, 0, 0, -1, width, height)
+            break
 
           case 4:
-            tempCanvasContext.transform(1, 0, 0, -1, 0, height);
-            break;
+            tempCanvasContext.transform(1, 0, 0, -1, 0, height)
+            break
 
           case 5:
-            tempCanvasContext.transform(0, 1, 1, 0, 0, 0);
-            break;
+            tempCanvasContext.transform(0, 1, 1, 0, 0, 0)
+            break
 
           case 6:
-            tempCanvasContext.transform(0, 1, -1, 0, height, 0);
-            break;
+            tempCanvasContext.transform(0, 1, -1, 0, height, 0)
+            break
 
           case 7:
-            tempCanvasContext.transform(0, -1, -1, 0, height, width);
-            break;
+            tempCanvasContext.transform(0, -1, -1, 0, height, width)
+            break
 
           case 8:
-            tempCanvasContext.transform(0, -1, 1, 0, 0, width);
-            break;
+            tempCanvasContext.transform(0, -1, 1, 0, 0, width)
+            break
 
           default:
-            tempCanvasContext.transform(1, 0, 0, 1, 0, 0);
+            tempCanvasContext.transform(1, 0, 0, 1, 0, 0)
 
         }
 
-        tempCanvasContext.drawImage(tempImg, 0, 0);
+        tempCanvasContext.drawImage(tempImg, 0, 0)
 
-        resolve(tempCanvas.toDataURL(srcImgMIMEType));
+        resolve(tempCanvas.toDataURL(srcImgMIMEType))
 
-      });
+      })
 
-      tempImg.src = srcBase64;
+      tempImg.src = srcBase64
 
-    });
+    })
 
-  },
+  }
+
   /**
    * 讀取圖片
    * 
@@ -226,229 +269,241 @@ const model = {
    * @param {Blob} imgFile input file 選取的檔案
    * @param {HTMLImageElement} imageEditor Cropper 編輯器所使用的 HTMLImageElement 元素
    */
-  readImg: function (imgElement, imgFile, imageEditor) {
-    if (!model._checkFileType(imgFile)) {
-      alert('Invalid image type.');
-      return;
+  readImg(imgElement, imgFile, imageEditor) {
+    if (!this[_checkFileType](imgFile)) {
+      alert('Invalid image type.')
+      return
 
     }
 
-    new Promise(function (resolve, reject) {
-      var fileReader = new FileReader();
+    new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
 
-      fileReader.addEventListener('load', function (event) {
-        resolve(event.target.result);
-
-      });
-
-      fileReader.readAsDataURL(imgFile);
-
-    }).then(function (dataUrl) {
-      return new Promise(function (resolve, reject) {
-        new Exif(dataUrl, {
-          exif: true,
-          done: function (exifTags) {
-            resolve(exifTags.Orientation);
-
-          },
-          fail: function (msg) {
-            reject(msg);
-
-          }
-        });
-
-      }).then(function (orientation) {
-        return model._resetOrientation(dataUrl, orientation, imgFile.type);
-
-      }).catch(function (msg) {
-        console.log(msg);
-        return Promise.resolve(dataUrl);
-
-      });
-
-    }).then(function (dataUrlAfterRotated) {
-      return new Promise(function (resolve, reject) {
-        model._img = imgElement;
-
-        model._img.addEventListener('load', function imgLoadHandler(event) {
-          resolve();
-
-          event.target.removeEventListener('load', imgLoadHandler);
-
-        });
-
-        model._img.src = dataUrlAfterRotated;
-
-      });
-
-    }).then(function () {
-      model._imgFileName = imgFile.name;
-      model._imgMIMEType = imgFile.type;
-      model._imgFileSize = imgFile.size;
-      model._imgWidth = model._img.naturalWidth;
-      model._imgHeight = model._img.naturalHeight;
-      model._updateResizePercentage();
-
-      view.displayImgFileDetail({
-        imgFileName: model._imgFileName,
-        imgMIMEType: model._imgMIMEType,
-        imgFileSizeKB: model._imgFileSize / 1024,
-        imgWidth: model._imgWidth,
-        imgHeight: model._imgHeight,
-        croppedImgWidth: model._imgWidth,
-        croppedImgHeight: model._imgHeight,
-        imgOutputWidth: model._outputWidth,
-        imgOutputHeight: model._outputHeight
-      });
-
-      return new Promise(function (resolve, reject) {
-        model._imageEditor = imageEditor;
-
-        model._imageEditor.addEventListener('load', function imgLoadHandler(event) {
-          resolve();
-
-          event.target.removeEventListener('load', imgLoadHandler);
-
-        });
-
-        model._imageEditor.src = model._img.src;
+      fileReader.addEventListener('load', event => {
+        resolve(event.target.result)
 
       })
 
-    }).then(function () {
-      model.closeCropper();
+      fileReader.readAsDataURL(imgFile)
 
-    });
+    }).then(dataUrl => {
+      return new Promise((resolve, reject) => {
+        new Exif(dataUrl, {
+          exif: true,
+          done(exifTags) {
+            resolve(exifTags.Orientation)
 
-  },
+          },
+          fail(msg) {
+            reject(msg)
+
+          }
+        })
+
+      }).then(orientation => {
+        return this[_resetOrientation](dataUrl, orientation, imgFile.type)
+
+      }).catch(msg => {
+        console.log(msg)
+        return Promise.resolve(dataUrl)
+
+      })
+
+    }).then(dataUrlAfterRotated => {
+      return new Promise((resolve, reject) => {
+        this[_img] = imgElement
+
+        this[_img].addEventListener('load', function imgLoadHandler(event) {
+          resolve()
+
+          event.target.removeEventListener('load', imgLoadHandler)
+
+        })
+
+        this[_img].src = dataUrlAfterRotated
+
+      })
+
+    }).then(() => {
+      this[_imgFileName] = imgFile.name
+      this[_imgMIMEType] = imgFile.type
+      this[_imgFileSize] = imgFile.size
+      this[_imgWidth] = this[_img].naturalWidth
+      this[_imgHeight] = this[_img].naturalHeight
+      this[_updateResizePercentage]()
+
+      const model = this
+
+      this[_view].displayImgFileDetail({
+        imgFileName: model[_imgFileName],
+        imgMIMEType: model[_imgMIMEType],
+        imgFileSizeKB: model[_imgFileSize] / 1024,
+        imgWidth: model[_imgWidth],
+        imgHeight: model[_imgHeight],
+        croppedImgWidth: model[_imgWidth],
+        croppedImgHeight: model[_imgHeight],
+        imgOutputWidth: model[_outputWidth],
+        imgOutputHeight: model[_outputHeight]
+      })
+
+      return new Promise((resolve, reject) => {
+        this[_imageEditor] = imageEditor
+
+        this[_imageEditor].addEventListener('load', function imgLoadHandler(event) {
+          resolve()
+
+          event.target.removeEventListener('load', imgLoadHandler)
+
+        })
+
+        this[_imageEditor].src = this[_img].src
+
+      })
+
+    }).then(() => {
+      this.closeCropper()
+
+    })
+
+  }
+
   /**
    * 下載編輯過的圖片
    */
-  downloadImg: function () {
-    var downloadUrl;
-    var downloadLink = document.createElement('a');
+  downloadImg() {
+    let downloadUrl
+    const downloadLink = document.createElement('a')
 
-    var tempCanvas = document.createElement('canvas');
-    var tempCanvasContext = tempCanvas.getContext('2d');
+    const tempCanvas = document.createElement('canvas')
+    const tempCanvasContext = tempCanvas.getContext('2d')
 
-    var imgClone = model._img.cloneNode();
-    imgClone.width = model._outputWidth;
-    imgClone.height = model._outputHeight;
+    const imgClone = this[_img].cloneNode()
+    imgClone.width = this[_outputWidth]
+    imgClone.height = this[_outputHeight]
 
-    tempCanvas.width = imgClone.width;
-    tempCanvas.height = imgClone.height;
-    tempCanvasContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-    tempCanvasContext.drawImage(model._img, 0, 0, imgClone.width, imgClone.height);
+    tempCanvas.width = imgClone.width
+    tempCanvas.height = imgClone.height
+    tempCanvasContext.clearRect(0, 0, tempCanvas.width, tempCanvas.height)
+    tempCanvasContext.drawImage(this[_img], 0, 0, imgClone.width, imgClone.height)
 
-    if (model._isGrayscale) {
-      model._turnGrayscale(tempCanvasContext);
+    if (this[_isGrayscale]) {
+      this[_turnGrayscale](tempCanvasContext)
 
     }
 
     // quality > 93 時會 download failed，原因未知
-    downloadUrl = tempCanvas.toDataURL(model._imgMIMEType, model._qualityRate);
-    downloadLink.href = downloadUrl;
-    downloadLink.download = 'edited_' + model._imgFileName;
-    downloadLink.click();
+    downloadUrl = tempCanvas.toDataURL(this[_imgMIMEType], this[_qualityRate])
+    downloadLink.href = downloadUrl
+    downloadLink.download = `edited_${this[_imgFileName]}`
+    downloadLink.click()
 
-  },
+  }
+
   /**
    * 將編輯過的圖片更新至負責顯示的 HTMLImageElement 元素
    */
-  setEditedImgSrcToImg: function () {
-    new Promise(function (resolve, reject) {
-      var croppedImgData = model._imgCropper.getCroppedCanvas();
+  setEditedImgSrcToImg() {
+    new Promise((resolve, reject) => {
+      const croppedImgData = this[_imgCropper].getCroppedCanvas()
 
-      model._img.addEventListener('load', function imgLoadHandler(event) {
-        resolve();
+      this[_img].addEventListener('load', function imgLoadHandler(event) {
+        resolve()
 
-        event.target.removeEventListener('load', imgLoadHandler);
+        event.target.removeEventListener('load', imgLoadHandler)
 
-      });
+      })
 
-      model._img.src = croppedImgData.toDataURL(model._imgMIMEType);
+      this[_img].src = croppedImgData.toDataURL(this[_imgMIMEType])
 
-    }).then(function () {
-      model._imgWidth = model._img.naturalWidth;
-      model._imgHeight = model._img.naturalHeight;
-      model._outputWidth = Math.round(model._imgWidth * model._resizePercentage / 100);
-      model._outputHeight = Math.round(model._imgHeight * model._resizePercentage / 100);
+    }).then(() => {
+      this[_imgWidth] = this[_img].naturalWidth
+      this[_imgHeight] = this[_img].naturalHeight
+      this[_outputWidth] = Math.round(this[_imgWidth] * this[_resizePercentage] / 100)
+      this[_outputHeight] = Math.round(this[_imgHeight] * this[_resizePercentage] / 100)
 
-      view.refreshCroppedImgResolution(model._imgWidth, model._imgHeight);
-      view.refreshResizePercentageWidthHeight(model._resizePercentage, model._outputWidth, model._outputHeight);
+      this[_view].refreshCroppedImgResolution(this[_imgWidth], this[_imgHeight])
+      this[_view].refreshResizePercentageWidthHeight(this[_resizePercentage], this[_outputWidth], this[_outputHeight])
 
-      return new Promise(function (resolve, reject) {
-        model._imageEditor.addEventListener('load', function imgLoadHandler(event) {
-          resolve();
+      return new Promise((resolve, reject) => {
+        this[_imageEditor].addEventListener('load', function imgLoadHandler(event) {
+          resolve()
 
-          event.target.removeEventListener('load', imgLoadHandler);
+          event.target.removeEventListener('load', imgLoadHandler)
 
-        });
+        })
 
-        model._imageEditor.src = model._img.src;
+        this[_imageEditor].src = this[_img].src
 
-      });
+      })
 
-    }).then(function () {
-      model.closeCropper();
+    }).then(() => {
+      this.closeCropper()
 
-    });
+    })
 
-  },
+  }
+
   /**
    * 重置 Cropper 編輯器
    */
-  resetCropper: function () {
-    model._imgCropper.reset();
+  resetCropper() {
+    this[_imgCropper].reset()
 
-  },
+  }
+
   /**
    * 關閉 Cropper 編輯器
    */
-  closeCropper: function () {
-    model._destroyCropper();
-    model._bindImgToOpenEditor();
+  closeCropper() {
+    this[_destroyCropper]()
+    this[_bindImgToOpenEditor]()
 
-  },
+  }
+
   /**
    * 設定 resize 百分比數值
    * 
    * @param {number} resizePercentage resize 百分比數值
    */
-  setResizePercentage: function (resizePercentage) {
-    model._resizePercentage = resizePercentage;
-    model._updateResizePercentage();
+  setResizePercentage(resizePercentage) {
+    this[_resizePercentage] = resizePercentage
+    this[_updateResizePercentage]()
 
-  },
+  }
+
   /**
    * 設定圖片輸出品質百分比數值
    * 
    * @param {number} qualityRate 圖片輸出品質百分比數值
    */
-  setQualityRate: function (qualityRate) {
-    model._qualityRate = qualityRate / 100;
-    view.refreshQualityPercentage(Math.round(model._qualityRate * 100));
+  setQualityRate(qualityRate) {
+    this[_qualityRate] = qualityRate / 100
+    this[_view].refreshQualityPercentage(Math.round(this[_qualityRate] * 100))
 
-  },
+  }
+
   /**
    * 設定圖片是否輸出為灰階
    * 
    * @param {boolean} isGrayscale
    */
-  setIsGrayscale: function (isGrayscale) {
-    model._isGrayscale = isGrayscale;
+  setIsGrayscale(isGrayscale) {
+    this[_isGrayscale] = isGrayscale
 
-  },
+  }
+
   /**
    * 設定圖片是否鎖定輸出解析度
    * 
    * @param {boolean} isResizeImgLock
    */
-  setIsResizeImgLock: function (isResizeImgLock) {
-    model._isResizeImgLock = isResizeImgLock;
-    model._updateResizePercentage();
+  setIsResizeImgLock(isResizeImgLock) {
+    this[_isResizeImgLock] = isResizeImgLock
+    this[_updateResizePercentage]()
 
   }
-};
 
-export default model;
+}
+
+
+export default Model
