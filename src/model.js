@@ -23,6 +23,7 @@ const _initImgEditor = Symbol()
 const _checkFileType = Symbol()
 const _updateResizePercentage = Symbol()
 const _resetOrientation = Symbol()
+const _lastOpenEditorHandler = Symbol()
 
 class Model {
   constructor(view) {
@@ -44,6 +45,7 @@ class Model {
     this[_isGrayscale] = false
     this[_isResizeImgLock] = false
     this[_imgCropper] = null
+    this[_lastOpenEditorHandler] = null
 
   }
 
@@ -82,10 +84,15 @@ class Model {
 
   [_bindImgToOpenEditor]() {
     console.log('editor init...')
+
+    if (this[_lastOpenEditorHandler] !== null) {
     // 先移除事件處理器，避免重複註冊
-    const handler = this[_openEditorHandler]()
-    this[_img].removeEventListener('click', handler)
-    this[_img].addEventListener('click', handler)
+      this[_img].removeEventListener('click', this[_lastOpenEditorHandler])
+      
+    }
+
+    this[_lastOpenEditorHandler] = this[_openEditorHandler]()
+    this[_img].addEventListener('click', this[_lastOpenEditorHandler])
 
   }
 
