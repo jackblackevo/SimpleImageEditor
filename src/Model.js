@@ -1,3 +1,6 @@
+import Exif from '@fengyuanchen/exif'
+import Cropper from 'cropperjs'
+
 const _view = Symbol()
 const _img = Symbol()
 const _imageEditor = Symbol()
