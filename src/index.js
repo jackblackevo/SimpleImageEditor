@@ -2,7 +2,7 @@ import View from './View'
 import Model from './Model'
 import Controller from './Controller'
 
-window.addEventListener('DOMContentLoaded', () => {
+function pageInit() {
   const view = new View(document)
   const model = new Model(view)
   const controller = new Controller(model, view)
@@ -62,4 +62,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
   })
 
-})
+}
+
+window.addEventListener('DOMContentLoaded', pageInit)
+
+if (module.hot) {
+  module.hot.accept(['./View', './Model', './Controller'], () => {
+    const oldFormArea = document.getElementById('formArea')
+    const newFormArea = oldFormArea.cloneNode(true)
+    const oldImgContainer = document.getElementById('imgContainer')
+    const newImgContainer = oldImgContainer.cloneNode(true)
+
+    oldFormArea.parentNode.replaceChild(newFormArea, oldFormArea)
+    oldImgContainer.parentNode.replaceChild(newImgContainer, oldImgContainer)
+
+    pageInit()
+
+  })
+
+}
