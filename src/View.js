@@ -1,5 +1,5 @@
 class View {
-  constructor(document) {
+  constructor (document) {
     this.chooseFileInput = document.getElementById('chooseFileInput')
     this.fileNameTxt = document.getElementById('fileNameTxt')
     this.fileTypeTxt = document.getElementById('fileTypeTxt')
@@ -24,10 +24,9 @@ class View {
     this.resetBtn = document.getElementById('resetBtn')
     this.cancelBtn = document.getElementById('cancelBtn')
     this.isGrayscaleCheckBox = document.getElementById('isGrayscaleCheckBox')
-
   }
 
-  displayImgFileDetail(imgDetailData) {
+  displayImgFileDetail (imgDetailData) {
     this.fileNameTxt.textContent = imgDetailData.imgFileName
     this.fileTypeTxt.textContent = imgDetailData.imgMIMEType
     this.originalImgSizeTxt.textContent = imgDetailData.imgFileSizeKB
@@ -43,55 +42,44 @@ class View {
     this.isGrayscaleCheckBox.disabled = false
     this.isResizeImgLockCheckBox.disabled = false
     this.outputFileBtn.disabled = false
-
   }
 
-  refreshCroppedImgResolution(croppedImgWidth, croppedImgHeight) {
+  refreshCroppedImgResolution (croppedImgWidth, croppedImgHeight) {
     this.croppedImgWidthTxt.textContent = croppedImgWidth
     this.croppedImgHeightTxt.textContent = croppedImgHeight
-
   }
 
-  displayImgEditor() {
+  displayImgEditor () {
     this.formArea.style.display = 'none'
     this.imgContainer.style.display = 'block'
-
   }
 
-  hideImgEditor() {
-    formArea.style.display = 'block'
-    imgContainer.style.display = 'none'
-
+  hideImgEditor () {
+    this.formArea.style.display = 'block'
+    this.imgContainer.style.display = 'none'
   }
 
-  refreshResizePercentageWidthHeight(resizePercentage, imgOutputWidth, imgOutputHeight) {
+  refreshResizePercentageWidthHeight (resizePercentage, imgOutputWidth, imgOutputHeight) {
     this.resizeValTxt.textContent = resizePercentage
     this.outputImgWidthTxt.textContent = imgOutputWidth
     this.outputImgHeightTxt.textContent = imgOutputHeight
-
   }
 
-  refreshResizeImgPercentRangeVal(resizePercentage) {
+  refreshResizeImgPercentRangeVal (resizePercentage) {
     this.resizeImgPercentRange.value = resizePercentage
-
   }
 
-  refreshQualityPercentage(qualityPercentage) {
+  refreshQualityPercentage (qualityPercentage) {
     this.qualityValTxt.textContent = qualityPercentage
-
   }
 
-  disableResizeImgPercentRange(isToDisable) {
+  disableResizeImgPercentRange (isToDisable) {
     if (isToDisable) {
       this.resizeImgPercentRange.disabled = true
-
     } else {
       this.resizeImgPercentRange.disabled = false
-
     }
-
   }
-
 }
 
 export default View

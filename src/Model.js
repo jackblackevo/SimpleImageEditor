@@ -1,35 +1,35 @@
 import Exif from '@fengyuanchen/exif'
 import Cropper from 'cropperjs'
 
-const _view = Symbol()
-const _img = Symbol()
-const _imageEditor = Symbol()
-const _imgMIMEType = Symbol()
-const _imgFileSize = Symbol()
-const _imgFileName = Symbol()
-const _imgWidth = Symbol()
-const _imgHeight = Symbol()
-const _outputWidth = Symbol()
-const _outputHeight = Symbol()
-const _maxOutputLongerLength = Symbol()
-const _maxOutputShorterLength = Symbol()
-const _resizePercentage = Symbol()
-const _qualityRate = Symbol()
-const _isGrayscale = Symbol()
-const _isResizeImgLock = Symbol()
-const _imgCropper = Symbol()
-const _turnGrayscale = Symbol()
-const _destroyCropper = Symbol()
-const _bindImgToOpenEditor = Symbol()
-const _openEditorHandler = Symbol()
-const _initImgEditor = Symbol()
-const _checkFileType = Symbol()
-const _updateResizePercentage = Symbol()
-const _resetOrientation = Symbol()
-const _lastOpenEditorHandler = Symbol()
+const _view = Symbol('_view')
+const _img = Symbol('_img')
+const _imageEditor = Symbol('_imageEditor')
+const _imgMIMEType = Symbol('_imgMIMEType')
+const _imgFileSize = Symbol('_imgFileSize')
+const _imgFileName = Symbol('_imgFileName')
+const _imgWidth = Symbol('_imgWidth')
+const _imgHeight = Symbol('_imgHeight')
+const _outputWidth = Symbol('_outputWidth')
+const _outputHeight = Symbol('_outputHeight')
+const _maxOutputLongerLength = Symbol('_maxOutputLongerLength')
+const _maxOutputShorterLength = Symbol('_maxOutputShorterLength')
+const _resizePercentage = Symbol('_resizePercentage')
+const _qualityRate = Symbol('_qualityRate')
+const _isGrayscale = Symbol('_isGrayscale')
+const _isResizeImgLock = Symbol('_isResizeImgLock')
+const _imgCropper = Symbol('_imgCropper')
+const _turnGrayscale = Symbol('_turnGrayscale')
+const _destroyCropper = Symbol('_destroyCropper')
+const _bindImgToOpenEditor = Symbol('_bindImgToOpenEditor')
+const _openEditorHandler = Symbol('_openEditorHandler')
+const _initImgEditor = Symbol('_initImgEditor')
+const _checkFileType = Symbol('_checkFileType')
+const _updateResizePercentage = Symbol('_updateResizePercentage')
+const _resetOrientation = Symbol('_resetOrientation')
+const _lastOpenEditorHandler = Symbol('_lastOpenEditorHandler')
 
 class Model {
-  constructor(view) {
+  constructor (view) {
     this[_view] = view
 
     this[_img] = null
@@ -49,11 +49,9 @@ class Model {
     this[_isResizeImgLock] = false
     this[_imgCropper] = null
     this[_lastOpenEditorHandler] = null
-
   }
 
-
-  [_turnGrayscale](canvasContext) {
+  [_turnGrayscale] (canvasContext) {
     let tempImgData
     let tempData
 
@@ -71,53 +69,45 @@ class Model {
     }
 
     canvasContext.putImageData(tempImgData, 0, 0)
-
   }
 
-  [_destroyCropper]() {
+  [_destroyCropper] () {
     this[_view].hideImgEditor()
 
     if (this[_imgCropper] !== null) {
       console.log('editor close...')
       this[_imgCropper].destroy()
-
     }
-
   }
 
-  [_bindImgToOpenEditor]() {
+  [_bindImgToOpenEditor] () {
     console.log('editor init...')
 
     if (this[_lastOpenEditorHandler] !== null) {
       // 先移除事件處理器，避免重複註冊
       this[_img].removeEventListener('click', this[_lastOpenEditorHandler])
-      
     } else {
       this[_lastOpenEditorHandler] = this[_openEditorHandler]()
-
     }
 
     this[_img].addEventListener('click', this[_lastOpenEditorHandler])
-
   }
 
-  [_openEditorHandler]() {
+  [_openEditorHandler] () {
     return event => {
       console.log('editor open...')
       this[_view].displayImgEditor()
 
       this[_initImgEditor]()
-
     }
-
   }
 
-  [_initImgEditor]() {
+  [_initImgEditor] () {
     this[_imgCropper] = new Cropper(this[_imageEditor], {
       movable: false,
       // zoomable: false,
       rotatable: false,
-      scalable: false,
+      scalable: false
       /*
       crop: function (event) {
          console.log('x = ' + event.detail.x)
@@ -130,17 +120,15 @@ class Model {
        }
        */
     })
-
   }
 
-  [_checkFileType](imgFile) {
+  [_checkFileType] (imgFile) {
     const fileType = imgFile.type
 
     return /^image\/(jpe?g|png)$/i.test(fileType)
-
   }
 
-  [_updateResizePercentage]() {
+  [_updateResizePercentage] () {
     if (this[_isResizeImgLock]) {
       let longerLength
       let shorterLength
@@ -151,7 +139,15 @@ class Model {
 
       let rate
 
-      this[_imgWidth] > this[_imgHeight] ? (longerLength = this[_imgWidth], shorterLength = this[_imgHeight], longerLengthName = 'width') : (longerLength = this[_imgHeight], shorterLength = this[_imgWidth], longerLengthName = 'height')
+      if (this[_imgWidth] > this[_imgHeight]) {
+        longerLength = this[_imgWidth]
+        shorterLength = this[_imgHeight]
+        longerLengthName = 'width'
+      } else {
+        longerLength = this[_imgHeight]
+        shorterLength = this[_imgWidth]
+        longerLengthName = 'height'
+      }
 
       let isFirst = true
       while (true) {
@@ -168,7 +164,6 @@ class Model {
 
             isFirst = false
             continue
-
           }
 
           if (isShorterLengthLongerThanMax) {
@@ -178,54 +173,52 @@ class Model {
 
             isFirst = false
             continue
-
           }
-
         } else {
           this[_view].disableResizeImgPercentRange(true)
           break
-
         }
         isFirst = false
-
       }
 
-      longerLengthName === 'width' ? (this[_outputWidth] = longerLength, this[_outputHeight] = shorterLength) : (this[_outputWidth] = shorterLength, this[_outputHeight] = longerLength)
+      if (longerLengthName === 'width') {
+        this[_outputWidth] = longerLength
+        this[_outputHeight] = shorterLength
+      } else {
+        this[_outputWidth] = shorterLength
+        this[_outputHeight] = longerLength
+      }
+
       this[_resizePercentage] = Math.round(((this[_outputWidth] / this[_imgWidth]) + (this[_outputHeight] / this[_imgHeight])) / 2 * 100)
 
       this[_view].refreshResizePercentageWidthHeight(this[_resizePercentage], this[_outputWidth], this[_outputHeight])
       this[_view].refreshResizeImgPercentRangeVal(this[_resizePercentage])
-
     } else {
       this[_outputWidth] = Math.round(this[_imgWidth] * this[_resizePercentage] / 100)
       this[_outputHeight] = Math.round(this[_imgHeight] * this[_resizePercentage] / 100)
 
       this[_view].refreshResizePercentageWidthHeight(this[_resizePercentage], this[_outputWidth], this[_outputHeight])
       this[_view].disableResizeImgPercentRange(false)
-
     }
-
   }
 
-  [_resetOrientation](srcBase64, srcOrientation, srcImgMIMEType) {
+  [_resetOrientation] (srcBase64, srcOrientation, srcImgMIMEType) {
     return new Promise((resolve, reject) => {
-      const tempImg = new Image()
+      const tempImg = new window.Image()
 
       tempImg.addEventListener('load', () => {
         const width = tempImg.naturalWidth
         const height = tempImg.naturalHeight
 
         const tempCanvas = document.createElement('canvas')
-        const tempCanvasContext = tempCanvas.getContext("2d")
+        const tempCanvasContext = tempCanvas.getContext('2d')
 
         if ([5, 6, 7, 8].indexOf(srcOrientation) > -1) {
           tempCanvas.width = height
           tempCanvas.height = width
-
         } else {
           tempCanvas.width = width
           tempCanvas.height = height
-
         }
 
         switch (srcOrientation) {
@@ -259,83 +252,71 @@ class Model {
 
           default:
             tempCanvasContext.transform(1, 0, 0, 1, 0, 0)
-
         }
 
         tempCanvasContext.drawImage(tempImg, 0, 0)
 
         resolve(tempCanvas.toDataURL(srcImgMIMEType))
-
       })
 
       tempImg.src = srcBase64
-
     })
-
   }
 
   /**
    * 讀取圖片
-   * 
+   *
    * @param {HTMLImageElement} imgElement 要顯示讀入圖片的 HTMLImageElement 元素
    * @param {Blob} imgFile input file 選取的檔案
    * @param {HTMLImageElement} imageEditor Cropper 編輯器所使用的 HTMLImageElement 元素
    */
-  readImg(imgElement, imgFile, imageEditor) {
+  readImg (imgElement, imgFile, imageEditor) {
     if (!this[_checkFileType](imgFile)) {
-      alert('Invalid image type.')
+      window.alert('Invalid image type.')
       return
-
     }
 
     new Promise((resolve, reject) => {
-      const fileReader = new FileReader()
+      const fileReader = new window.FileReader()
 
       fileReader.addEventListener('load', event => {
         resolve(event.target.result)
-
       })
 
       fileReader.readAsDataURL(imgFile)
-
     }).then(dataUrl => {
       return new Promise((resolve, reject) => {
-        new Exif(dataUrl, {
-          exif: true,
-          done(exifTags) {
-            resolve(exifTags.Orientation)
+        const initExif = () => {
+          return new Exif(dataUrl, {
+            exif: true,
+            done (exifTags) {
+              resolve(exifTags.Orientation)
+            },
+            fail (msg) {
+              reject(msg)
+            }
+          })
+        }
 
-          },
-          fail(msg) {
-            reject(msg)
-
-          }
-        })
-
+        initExif()
       }).then(orientation => {
         return this[_resetOrientation](dataUrl, orientation, imgFile.type)
-
       }).catch(msg => {
         console.log(msg)
         return Promise.resolve(dataUrl)
-
       })
-
     }).then(dataUrlAfterRotated => {
       return new Promise((resolve, reject) => {
         this[_img] = imgElement
 
-        this[_img].addEventListener('load', function imgLoadHandler(event) {
+        this[_img].addEventListener('load', function imgLoadHandler (event) {
           resolve()
 
           event.target.removeEventListener('load', imgLoadHandler)
-
         })
 
         this[_img].src = dataUrlAfterRotated
-
       })
-
     }).then(() => {
       this[_imgFileName] = imgFile.name
       this[_imgMIMEType] = imgFile.type
@@ -361,28 +342,23 @@ class Model {
       return new Promise((resolve, reject) => {
         this[_imageEditor] = imageEditor
 
-        this[_imageEditor].addEventListener('load', function imgLoadHandler(event) {
+        this[_imageEditor].addEventListener('load', function imgLoadHandler (event) {
           resolve()
 
           event.target.removeEventListener('load', imgLoadHandler)
-
         })
 
         this[_imageEditor].src = this[_img].src
-
       })
-
     }).then(() => {
       this.closeCropper()
-
     })
-
   }
 
   /**
    * 下載編輯過的圖片
    */
-  downloadImg() {
+  downloadImg () {
     let downloadUrl
     const downloadLink = document.createElement('a')
 
@@ -400,7 +376,6 @@ class Model {
 
     if (this[_isGrayscale]) {
       this[_turnGrayscale](tempCanvasContext)
-
     }
 
     // quality > 93 時會 download failed，原因未知
@@ -408,25 +383,22 @@ class Model {
     downloadLink.href = downloadUrl
     downloadLink.download = `edited_${this[_imgFileName]}`
     downloadLink.click()
-
   }
 
   /**
    * 將編輯過的圖片更新至負責顯示的 HTMLImageElement 元素
    */
-  setEditedImgSrcToImg() {
+  setEditedImgSrcToImg () {
     new Promise((resolve, reject) => {
       const croppedImgData = this[_imgCropper].getCroppedCanvas()
 
-      this[_img].addEventListener('load', function imgLoadHandler(event) {
+      this[_img].addEventListener('load', function imgLoadHandler (event) {
         resolve()
 
         event.target.removeEventListener('load', imgLoadHandler)
-
       })
 
       this[_img].src = croppedImgData.toDataURL(this[_imgMIMEType])
-
     }).then(() => {
       this[_imgWidth] = this[_img].naturalWidth
       this[_imgHeight] = this[_img].naturalHeight
@@ -437,85 +409,72 @@ class Model {
       this[_view].refreshResizePercentageWidthHeight(this[_resizePercentage], this[_outputWidth], this[_outputHeight])
 
       return new Promise((resolve, reject) => {
-        this[_imageEditor].addEventListener('load', function imgLoadHandler(event) {
+        this[_imageEditor].addEventListener('load', function imgLoadHandler (event) {
           resolve()
 
           event.target.removeEventListener('load', imgLoadHandler)
-
         })
 
         this[_imageEditor].src = this[_img].src
-
       })
-
     }).then(() => {
       this.closeCropper()
-
     })
-
   }
 
   /**
    * 重置 Cropper 編輯器
    */
-  resetCropper() {
+  resetCropper () {
     this[_imgCropper].reset()
-
   }
 
   /**
    * 關閉 Cropper 編輯器
    */
-  closeCropper() {
+  closeCropper () {
     this[_destroyCropper]()
     this[_bindImgToOpenEditor]()
-
   }
 
   /**
    * 設定 resize 百分比數值
-   * 
+   *
    * @param {number} resizePercentage resize 百分比數值
    */
-  setResizePercentage(resizePercentage) {
+  setResizePercentage (resizePercentage) {
     this[_resizePercentage] = resizePercentage
     this[_updateResizePercentage]()
-
   }
 
   /**
    * 設定圖片輸出品質百分比數值
-   * 
+   *
    * @param {number} qualityRate 圖片輸出品質百分比數值
    */
-  setQualityRate(qualityRate) {
+  setQualityRate (qualityRate) {
     this[_qualityRate] = qualityRate / 100
     this[_view].refreshQualityPercentage(Math.round(this[_qualityRate] * 100))
-
   }
 
   /**
    * 設定圖片是否輸出為灰階
-   * 
+   *
    * @param {boolean} isGrayscale
    */
-  setIsGrayscale(isGrayscale) {
+  setIsGrayscale (isGrayscale) {
     this[_isGrayscale] = isGrayscale
-
   }
 
   /**
    * 設定圖片是否鎖定輸出解析度
-   * 
+   *
    * @param {boolean} isResizeImgLock
    */
-  setIsResizeImgLock(isResizeImgLock) {
+  setIsResizeImgLock (isResizeImgLock) {
     this[_isResizeImgLock] = isResizeImgLock
     this[_updateResizePercentage]()
-
   }
-
 }
-
 
 export default Model

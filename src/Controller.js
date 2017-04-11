@@ -1,60 +1,49 @@
-const _model = Symbol()
-const _view = Symbol()
+const _model = Symbol('_model')
+const _view = Symbol('_view')
 
 class Controller {
-  constructor(model, view) {
+  constructor (model, view) {
     this[_model] = model
     this[_view] = view
-
   }
 
-  readSelectFile(imgFile) {
+  readSelectFile (imgFile) {
     this[_model].readImg(this[_view].imgPreviewArea, imgFile, this[_view].imageEditor)
-
   }
 
-  updateResizeImgPercent(resizeImgPercentVal) {
+  updateResizeImgPercent (resizeImgPercentVal) {
     const resizePercentage = Number.parseInt(resizeImgPercentVal)
     this[_model].setResizePercentage(resizePercentage)
-
   }
 
-  updateCompressionImgPercent(compressionImgPercentVal) {
+  updateCompressionImgPercent (compressionImgPercentVal) {
     const qualityRate = Number.parseInt(compressionImgPercentVal)
     this[_model].setQualityRate(qualityRate)
-
   }
 
-  updateGrayscaleFlag(isGrayscale) {
+  updateGrayscaleFlag (isGrayscale) {
     this[_model].setIsGrayscale(isGrayscale)
-
   }
 
-  updateResizeImgLockFlag(isResizeImgLock) {
+  updateResizeImgLockFlag (isResizeImgLock) {
     this[_model].setIsResizeImgLock(isResizeImgLock)
-
   }
 
-  getImgFile() {
+  getImgFile () {
     this[_model].downloadImg()
-
   }
 
-  cropImg() {
+  cropImg () {
     this[_model].setEditedImgSrcToImg()
-
   }
 
-  resetCrop() {
+  resetCrop () {
     this[_model].resetCropper()
-
   }
 
-  closeCrop() {
+  closeCrop () {
     this[_model].closeCropper()
-
   }
-
 }
 
 export default Controller
