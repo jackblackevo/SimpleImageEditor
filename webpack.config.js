@@ -33,6 +33,29 @@ const webpackConfig = {
     // 模組處理規則
     rules: [
       {
+        // 設定為預先應用的規則（在其它規則前先作用）
+        enforce: 'pre',
+        // 資源檔案篩選條件
+        resource: {
+          // 須符合正則表示法條件
+          test: [
+            // 表示作用在所有 *.js 檔案
+            /\.js$/
+          ],
+          // 須排除路徑條件（本機路徑，須為絕對路徑）
+          exclude: [
+            // 表示排除專案中的 node_modules 目錄
+            path.join(__dirname, 'node_modules')
+          ]
+        },
+        // 應用於此處理規則的 Loaders（轉換器）
+        use: [
+          {
+            loader: 'standard-loader'
+          }
+        ]
+      },
+      {
         // 資源檔案篩選條件
         resource: {
           // 須符合正則表示法條件
@@ -83,7 +106,6 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin()
   )
-
 } else {
   // 開發階段執行，則使用以下設定值：
   // 產生原始碼映射表（Source Map），方便開發時除錯
@@ -118,7 +140,6 @@ if (process.env.NODE_ENV === 'production') {
     // Hot-Reload 時在瀏覽器 Console 顯示更新的檔案名稱
     new webpack.NamedModulesPlugin()
   )
-
 }
 
 // 將全部設定輸出為 Node.js 模組，供 Webpack 2 使用
