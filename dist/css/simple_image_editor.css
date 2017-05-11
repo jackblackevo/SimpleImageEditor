@@ -8,7 +8,7 @@
 }
 
 #imgPreviewAreaWrap {
-  margin-top: 6px;
+  margin: 6px auto;
   min-height: 300px;
   max-width: 100%;
   background-color: lightgray;
@@ -38,6 +38,15 @@
   max-width: 100%;
 }
 
+@media (min-width: 768px) {
+  #imgPreviewAreaWrap,
+  #imgInfo,
+  #resizeImg,
+  #imgContainer {
+    max-width: 750px;
+  }
+}
+
 #controlBtnArea :nth-child(n+1) {
   margin-left: 10px;
 }
@@ -45,7 +54,7 @@
 #controlBtnArea,
 #resizeImg,
 #imgInfo {
-  margin-top: 6px;
+  margin: 6px auto;
 }
 
 #chooseFileBtn {
